@@ -11,18 +11,11 @@ import org.example.dto.CsvFileDto;
 
 public class CsvServiceImpl implements CsvService {
   private static final String RESPONSE_VALUE_SEPARATOR = " ";
+  private static final String COMMA = ",";
 
-  private CsvFileDto csvFileDto;
+  private final CsvFileDto csvFileDto;
 
   public CsvServiceImpl(CsvFileDto csvFileDto) {
-    this.csvFileDto = csvFileDto;
-  }
-
-  public CsvFileDto getCsvFileKeeper() {
-    return csvFileDto;
-  }
-
-  public void setCsvFileKeeper(CsvFileDto csvFileDto) {
     this.csvFileDto = csvFileDto;
   }
 
@@ -30,11 +23,11 @@ public class CsvServiceImpl implements CsvService {
   public List<String> count(String columnName) {
     List<String> content = csvFileDto.getContent();
 
-    String[] headerNames = content.get(0).split(",");
+    String[] headerNames = content.get(0).split(COMMA);
     int columnPosition = findColumnPosition(columnName, headerNames);
 
     Map<String, Long> map = content.stream()
-        .map(line -> line.split(","))
+        .map(line -> line.split(COMMA))
         .map(arr -> arr[columnPosition])
         .filter(value -> !value.equalsIgnoreCase(columnName))
         .collect(
@@ -56,7 +49,7 @@ public class CsvServiceImpl implements CsvService {
   @Override
   public List<String> findMax(String columnName) {
     List<String> content = csvFileDto.getContent();
-    String[] headerNames = content.get(0).split(",");
+    String[] headerNames = content.get(0).split(COMMA);
 
     if (Arrays.stream(headerNames).noneMatch(headerName -> headerName.equalsIgnoreCase(columnName))) {
       throw new IllegalArgumentException(String.format("The column \"%s\" was not found", columnName));
@@ -66,7 +59,7 @@ public class CsvServiceImpl implements CsvService {
     int rowPosition = 0;
     int maxValue = Integer.MIN_VALUE;
     for (int i = 1; i < content.size(); i++) {
-      int value = Integer.parseInt(content.get(i).split(",")[columnPosition]);
+      int value = Integer.parseInt(content.get(i).split(COMMA)[columnPosition]);
       if (value > maxValue) {
         maxValue = value;
         rowPosition = i;
@@ -90,14 +83,14 @@ public class CsvServiceImpl implements CsvService {
   private List<String> collectResponseForFindMax(List<String> content, int columnPosition, int rowPosition) {
     List<String> result = new ArrayList<>();
     StringBuilder sb = new StringBuilder();
-    String[] headerNames = content.get(0).split(",");
+    String[] headerNames = content.get(0).split(COMMA);
     sb.append(headerNames[0])
         .append(RESPONSE_VALUE_SEPARATOR)
         .append(headerNames[columnPosition]);
     result.add(sb.toString());
 
     sb = new StringBuilder();
-    String[] rowValues = content.get(rowPosition).split(",");
+    String[] rowValues = content.get(rowPosition).split(COMMA);
     sb.append(rowValues[0])
         .append(RESPONSE_VALUE_SEPARATOR)
         .append(rowValues[columnPosition]);
