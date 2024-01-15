@@ -2,15 +2,14 @@ package org.example.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
 import org.example.dto.CsvFileDto;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class CsvServiceImplTest extends TestCase {
+public class CsvServiceImplTest {
   private final CsvServiceImpl service;
 
-  {
+  public CsvServiceImplTest() {
     CsvFileDto mockCsvFileDto = new CsvFileDto();
     List<String> mockCsvContent = new ArrayList<>();
     mockCsvContent.add("Name,Unit,Prevoius,Title,Description");
@@ -25,7 +24,7 @@ public class CsvServiceImplTest extends TestCase {
   }
 
   @Test
-  public void testCount() {
+  public void testCountValidCase() {
     List<String> expected = new ArrayList<>();
     expected.add("Name Count");
     expected.add("Dmytro 3");
@@ -37,12 +36,38 @@ public class CsvServiceImplTest extends TestCase {
   }
 
   @Test
-  public void testFindMax() {
+  public void testCountColumnNotExists() {
+    List<String> expected = new ArrayList<>();
+    expected.add("The column \"Salary\" was not found");
+
+    List<String> actual = service.count("Salary");
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testFindMaxValidCase() {
     List<String> expected = new ArrayList<>();
     expected.add("Name Unit");
     expected.add("Ihor 11");
 
     List<String> actual = service.findMax("Unit");
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testFindMaxColumnNotExists() {
+    List<String> expected = new ArrayList<>();
+    expected.add("The column \"Salary\" was not found");
+
+    List<String> actual = service.findMax("Salary");
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test(expected = NumberFormatException.class)
+  public void testFindMaxColumnNotNumeric() {
+    List<String> expected = new ArrayList<>();
+
+    List<String> actual = service.findMax("Title");
     Assert.assertEquals(expected, actual);
   }
 }
