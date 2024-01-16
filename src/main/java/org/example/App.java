@@ -7,6 +7,8 @@ import org.example.model.Action;
 import org.example.service.CommandService;
 import org.example.service.CommandServiceImpl;
 import org.example.service.CsvServiceImpl;
+import org.example.service.OutputService;
+import org.example.service.OutputServiceImpl;
 import org.example.service.UploadServiceImpl;
 
 public class App {
@@ -19,12 +21,7 @@ public class App {
 
 
     public static void main(String[] args) {
-
-        // TODO: OutputService
-        // TODO: Extract logic from the DTO-class
-        // TODO: CsvFileUploadService
-        // TODO: Validators
-
+        OutputService output = new OutputServiceImpl();
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -41,7 +38,8 @@ public class App {
                 || Arrays.stream(Action.values()).noneMatch(
                     action -> action.toString().equalsIgnoreCase(split[COMMAND_PART_ACTION])))
             {
-                System.out.println("Wrong format.\nRight format: myparser <file_name.csv> find_max|count <column_name>");
+                output.sendResponse(
+                    List.of("Wrong format.\nRight format: myparser <file_name.csv> find_max|count <column_name>"));
                 continue;
             }
 
@@ -54,7 +52,7 @@ public class App {
                     new UploadServiceImpl().uploadFile(fileName)));
             List<String> processedData = commandService.processCommand(action, parameter);
 
-            processedData.forEach(System.out::println);
+            output.sendResponse(processedData);
         }
     }
 }
