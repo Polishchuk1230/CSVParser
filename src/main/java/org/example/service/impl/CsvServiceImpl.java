@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.example.exception.ColumnNotFountException;
 import org.example.exception.FileIsEmptyException;
 import org.example.exception.TableIsEmptyException;
+import org.example.service.CsvService;
 
 public class CsvServiceImpl implements CsvService, AutoCloseable {
   private static final String RESPONSE_VALUE_SEPARATOR = " ";

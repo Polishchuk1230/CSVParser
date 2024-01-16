@@ -1,6 +1,7 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.util.List;
+import org.example.service.OutputService;
 
 public class OutputServiceImpl implements OutputService {
 

@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import org.example.model.Action;
-import org.example.service.CommandServiceImpl;
-import org.example.service.CsvServiceImpl;
+import org.example.service.impl.CommandServiceImpl;
+import org.example.service.impl.CsvServiceImpl;
 import org.example.service.ExceptionHandler;
-import org.example.service.ExceptionHandlerImpl;
+import org.example.service.impl.ExceptionHandlerImpl;
 import org.example.service.OutputService;
-import org.example.service.OutputServiceImpl;
-import org.example.service.UploadServiceImpl;
+import org.example.service.impl.OutputServiceImpl;
+import org.example.service.impl.UploadServiceImpl;
 
 public class App {
     private static final String APP_NAME = "myparser";

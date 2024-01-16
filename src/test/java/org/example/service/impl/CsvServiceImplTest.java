@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.example.exception.ColumnNotFountException;
+import org.example.exception.FileIsEmptyException;
+import org.example.service.CsvService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,5 +71,13 @@ public class CsvServiceImplTest {
 
     List<String> actual = csvService.findMax("Title");
     Assert.assertEquals(expected, actual);
+  }
+
+  @Test(expected = FileIsEmptyException.class)
+  public void testFindMaxFileIsEmpty() throws IOException {
+    BufferedReader mockedReader = Mockito.mock(BufferedReader.class);
+    Mockito.when(mockedReader.readLine()).thenReturn(null);
+    CsvServiceImpl service = new CsvServiceImpl(mockedReader);
+    service.findMax("Unit");
   }
 }

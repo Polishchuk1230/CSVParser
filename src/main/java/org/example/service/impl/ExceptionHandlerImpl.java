@@ -1,6 +1,7 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.util.List;
+import org.example.service.ExceptionHandler;
 
 public class ExceptionHandlerImpl implements ExceptionHandler {
 
