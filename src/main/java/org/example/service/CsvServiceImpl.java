@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.example.dto.CsvFileDto;
+import org.example.exception.ColumnNotFountException;
 
 public class CsvServiceImpl implements CsvService {
   private static final String RESPONSE_VALUE_SEPARATOR = " ";
@@ -24,9 +25,6 @@ public class CsvServiceImpl implements CsvService {
 
     String[] headerNames = content.get(0).split(COMMA);
     int columnPosition = findColumnPosition(columnName, headerNames);
-    if (columnPosition < 0) {
-      return List.of(String.format("The column \"%s\" was not found", columnName));
-    }
 
     Map<String, Long> map = content.stream()
         .map(line -> line.split(COMMA))
@@ -54,9 +52,6 @@ public class CsvServiceImpl implements CsvService {
     String[] headerNames = content.get(0).split(COMMA);
 
     int columnPosition = findColumnPosition(columnName, headerNames);
-    if (columnPosition < 0) {
-      return List.of(String.format("The column \"%s\" was not found", columnName));
-    }
 
     int rowPosition = 0;
     int maxValue = Integer.MIN_VALUE;
@@ -78,6 +73,10 @@ public class CsvServiceImpl implements CsvService {
         columnPosition = i;
         break;
       }
+    }
+    if (columnPosition < 0) {
+      throw new ColumnNotFountException(
+          String.format("The column \"%s\" was not found", columnName));
     }
     return columnPosition;
   }

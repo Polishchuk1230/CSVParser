@@ -3,6 +3,7 @@ package org.example.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.example.dto.CsvFileDto;
+import org.example.exception.ColumnNotFountException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,13 +34,9 @@ public class CsvServiceImplTest {
     Assert.assertEquals(expected, actual);
   }
 
-  @Test
+  @Test(expected = ColumnNotFountException.class)
   public void testCountColumnNotExists() {
-    List<String> expected = new ArrayList<>();
-    expected.add("The column \"Salary\" was not found");
-
-    List<String> actual = csvService.count("Salary");
-    Assert.assertEquals(expected, actual);
+    csvService.count("Salary");
   }
 
   @Test
@@ -52,13 +49,9 @@ public class CsvServiceImplTest {
     Assert.assertEquals(expected, actual);
   }
 
-  @Test
+  @Test(expected = ColumnNotFountException.class)
   public void testFindMaxColumnNotExists() {
-    List<String> expected = new ArrayList<>();
-    expected.add("The column \"Salary\" was not found");
-
-    List<String> actual = csvService.findMax("Salary");
-    Assert.assertEquals(expected, actual);
+    csvService.findMax("Salary");
   }
 
   @Test(expected = NumberFormatException.class)
