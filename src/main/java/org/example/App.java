@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import org.example.model.Action;
-import org.example.service.CommandService;
 import org.example.service.CommandServiceImpl;
 import org.example.service.CsvServiceImpl;
 import org.example.service.ExceptionHandler;
@@ -51,10 +50,9 @@ public class App {
             String parameter = splitInput[COMMAND_PART_PARAMETER];
 
             List<String> processedData;
-            try {
-                CommandService commandService = new CommandServiceImpl(
-                    new CsvServiceImpl(
-                        new UploadServiceImpl().uploadFile(fileName)));
+            try (CommandServiceImpl commandService = new CommandServiceImpl(
+                new CsvServiceImpl(new UploadServiceImpl().uploadFile(fileName))))
+            {
                 processedData = commandService.processCommand(action, parameter);
             } catch(Exception e) {
                 processedData = exceptionHandler.handleException(e);

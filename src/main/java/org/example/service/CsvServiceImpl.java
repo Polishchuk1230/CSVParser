@@ -1,32 +1,31 @@
 package org.example.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import org.example.dto.CsvFileDto;
 import org.example.exception.ColumnNotFountException;
 
-public class CsvServiceImpl implements CsvService {
+public class CsvServiceImpl implements CsvService, AutoCloseable {
   private static final String RESPONSE_VALUE_SEPARATOR = " ";
   private static final String COMMA = ",";
 
-  private final CsvFileDto csvFileDto;
+  private final BufferedReader bufferedReader;
 
-  public CsvServiceImpl(CsvFileDto csvFileDto) {
-    this.csvFileDto = csvFileDto;
+  public CsvServiceImpl(BufferedReader bufferedReader) {
+    this.bufferedReader = bufferedReader;
   }
 
   @Override
-  public List<String> count(String columnName) {
-    List<String> content = csvFileDto.getContent();
-
-    String[] headerNames = content.get(0).split(COMMA);
+  public List<String> count(String columnName) throws IOException {
+    String[] headerNames = bufferedReader.readLine().split(COMMA);
     int columnPosition = findColumnPosition(columnName, headerNames);
 
-    Map<String, Long> map = content.stream()
+    Map<String, Long> map = bufferedReader.lines()
         .map(line -> line.split(COMMA))
         .map(arr -> arr[columnPosition])
         .filter(value -> !value.equalsIgnoreCase(columnName))
@@ -47,23 +46,30 @@ public class CsvServiceImpl implements CsvService {
   }
 
   @Override
-  public List<String> findMax(String columnName) {
-    List<String> content = csvFileDto.getContent();
-    String[] headerNames = content.get(0).split(COMMA);
+  public List<String> findMax(String columnName) throws IOException {
+    String[] headerNames = bufferedReader.readLine().split(COMMA);
 
     int columnPosition = findColumnPosition(columnName, headerNames);
 
-    int rowPosition = 0;
-    int maxValue = Integer.MIN_VALUE;
-    for (int i = 1; i < content.size(); i++) {
-      int value = Integer.parseInt(content.get(i).split(COMMA)[columnPosition]);
-      if (value > maxValue) {
-        maxValue = value;
-        rowPosition = i;
-      }
+    String[] maxValueArr = bufferedReader.lines()
+        .map(str -> str.split(COMMA))
+        .reduce(null, (resultArr, splitLine) -> {
+          if (resultArr == null) {
+            return new String[] {splitLine[0], splitLine[columnPosition]};
+          }
+          int oldValue = Integer.parseInt(resultArr[1]);
+          int newValue = Integer.parseInt(splitLine[columnPosition]);
+          if (newValue > oldValue) {
+            return new String[] {splitLine[0], splitLine[columnPosition]};
+          }
+          return resultArr;
+        });
+
+    if (maxValueArr == null) {
+      throw new IllegalStateException("File is empty");
     }
 
-    return collectResponseForFindMax(content, columnPosition, rowPosition);
+    return collectResponseForFindMax(headerNames, columnPosition, maxValueArr);
   }
 
   private int findColumnPosition(String columnName, String[] headerNames) {
@@ -81,21 +87,22 @@ public class CsvServiceImpl implements CsvService {
     return columnPosition;
   }
 
-  private List<String> collectResponseForFindMax(List<String> content, int columnPosition, int rowPosition) {
+  private List<String> collectResponseForFindMax(String[] headerNames, int columnPosition, String[] maxValue) {
     List<String> result = new ArrayList<>();
     StringBuilder sb = new StringBuilder();
-    String[] headerNames = content.get(0).split(COMMA);
     sb.append(headerNames[0])
         .append(RESPONSE_VALUE_SEPARATOR)
         .append(headerNames[columnPosition]);
     result.add(sb.toString());
 
     sb = new StringBuilder();
-    String[] rowValues = content.get(rowPosition).split(COMMA);
-    sb.append(rowValues[0])
-        .append(RESPONSE_VALUE_SEPARATOR)
-        .append(rowValues[columnPosition]);
+    sb.append(maxValue[0]).append(RESPONSE_VALUE_SEPARATOR).append(maxValue[1]);
     result.add(sb.toString());
     return result;
+  }
+
+  @Override
+  public void close() throws Exception {
+    this.bufferedReader.close();
   }
 }
