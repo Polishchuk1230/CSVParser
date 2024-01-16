@@ -73,21 +73,6 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
     return collectResponseForFindMax(columnPosition, headerNames, maxValueArr);
   }
 
-  private int findColumnPositionOrThrowException(String columnName, String[] headerNames) {
-    int columnPosition = -1;
-    for (int i = 0; i < headerNames.length; i++) {
-      if (headerNames[i].equalsIgnoreCase(columnName)) {
-        columnPosition = i;
-        break;
-      }
-    }
-    if (columnPosition < 0) {
-      throw new ColumnNotFountException(
-          String.format("The column \"%s\" was not found", columnName));
-    }
-    return columnPosition;
-  }
-
   private List<String> collectResponseForFindMax(int columnPosition, String[] headerNames, String[] maxValue) {
     List<String> result = new ArrayList<>();
     StringBuilder sb = new StringBuilder();
@@ -106,10 +91,25 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
   }
 
   private String fetchFirstLineOrThrowException(BufferedReader reader) throws IOException {
-    String firstLine = bufferedReader.readLine();
+    String firstLine = reader.readLine();
     if (firstLine == null) {
       throw new FileIsEmptyException("File is empty");
     }
     return firstLine;
+  }
+
+  private int findColumnPositionOrThrowException(String columnName, String[] headerNames) {
+    int columnPosition = -1;
+    for (int i = 0; i < headerNames.length; i++) {
+      if (headerNames[i].equalsIgnoreCase(columnName)) {
+        columnPosition = i;
+        break;
+      }
+    }
+    if (columnPosition < 0) {
+      throw new ColumnNotFountException(
+          String.format("The column \"%s\" was not found", columnName));
+    }
+    return columnPosition;
   }
 }
