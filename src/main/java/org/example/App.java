@@ -7,6 +7,8 @@ import org.example.model.Action;
 import org.example.service.CommandService;
 import org.example.service.CommandServiceImpl;
 import org.example.service.CsvServiceImpl;
+import org.example.service.ExceptionHandler;
+import org.example.service.ExceptionHandlerImpl;
 import org.example.service.OutputService;
 import org.example.service.OutputServiceImpl;
 import org.example.service.UploadServiceImpl;
@@ -22,6 +24,7 @@ public class App {
 
     public static void main(String[] args) {
         OutputService output = new OutputServiceImpl();
+        ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -33,25 +36,29 @@ public class App {
                 continue;
             }
 
-            String[] split = input.split(USER_INPUT_VALUE_SEPARATOR);
-            if (split.length != COMMAND_PARTS_COUNT
+            String[] splitInput = input.split(USER_INPUT_VALUE_SEPARATOR);
+            if (splitInput.length != COMMAND_PARTS_COUNT
                 || Arrays.stream(Action.values()).noneMatch(
-                    action -> action.toString().equalsIgnoreCase(split[COMMAND_PART_ACTION])))
+                    action -> action.toString().equalsIgnoreCase(splitInput[COMMAND_PART_ACTION])))
             {
                 output.sendResponse(
                     List.of("Wrong format.\nRight format: myparser <file_name.csv> find_max|count <column_name>"));
                 continue;
             }
 
-            String fileName = split[COMMAND_PART_FILE_NAME];
-            String action = split[COMMAND_PART_ACTION];
-            String parameter = split[COMMAND_PART_PARAMETER];
+            String fileName = splitInput[COMMAND_PART_FILE_NAME];
+            String action = splitInput[COMMAND_PART_ACTION];
+            String parameter = splitInput[COMMAND_PART_PARAMETER];
 
-            CommandService commandService = new CommandServiceImpl(
-                new CsvServiceImpl(
-                    new UploadServiceImpl().uploadFile(fileName)));
-            List<String> processedData = commandService.processCommand(action, parameter);
-
+            List<String> processedData;
+            try {
+                CommandService commandService = new CommandServiceImpl(
+                    new CsvServiceImpl(
+                        new UploadServiceImpl().uploadFile(fileName)));
+                processedData = commandService.processCommand(action, parameter);
+            } catch(Exception e) {
+                processedData = exceptionHandler.handleException(e);
+            }
             output.sendResponse(processedData);
         }
     }

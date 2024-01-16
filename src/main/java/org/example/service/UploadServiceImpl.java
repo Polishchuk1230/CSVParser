@@ -10,7 +10,7 @@ import org.example.dto.CsvFileDto;
 public class UploadServiceImpl implements UploadService {
 
   @Override
-  public CsvFileDto uploadFile(String path) {
+  public CsvFileDto uploadFile(String path) throws IOException {
     try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
       String line;
       List<String> csvContent = new ArrayList<>();
@@ -18,9 +18,6 @@ public class UploadServiceImpl implements UploadService {
         csvContent.add(line);
       }
       return new CsvFileDto(csvContent);
-    } catch (IOException e) {
-      e.printStackTrace();
     }
-    return null;
   }
 }
