@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Scanner;
 import org.example.model.Action;
 import org.example.service.CommandService;
+import org.example.service.CommandServiceImpl;
+import org.example.service.CsvServiceImpl;
+import org.example.service.UploadServiceImpl;
 
 public class App {
     private static final String APP_NAME = "myparser";
@@ -16,6 +19,12 @@ public class App {
 
 
     public static void main(String[] args) {
+
+        // TODO: OutputService
+        // TODO: Extract logic from the DTO-class
+        // TODO: CsvFileUploadService
+        // TODO: Validators
+
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -40,7 +49,9 @@ public class App {
             String action = split[COMMAND_PART_ACTION];
             String parameter = split[COMMAND_PART_PARAMETER];
 
-            CommandService commandService = new CommandService(fileName);
+            CommandService commandService = new CommandServiceImpl(
+                new CsvServiceImpl(
+                    new UploadServiceImpl().uploadFile(fileName)));
             List<String> processedData = commandService.processCommand(action, parameter);
 
             processedData.forEach(System.out::println);

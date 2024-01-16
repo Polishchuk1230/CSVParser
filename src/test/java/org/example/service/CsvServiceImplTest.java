@@ -7,10 +7,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class CsvServiceImplTest {
-  private final CsvServiceImpl service;
+  private final CsvService csvService;
 
   public CsvServiceImplTest() {
-    CsvFileDto mockCsvFileDto = new CsvFileDto();
     List<String> mockCsvContent = new ArrayList<>();
     mockCsvContent.add("Name,Unit,Prevoius,Title,Description");
     mockCsvContent.add("Dmytro,0,4,QA,Quality Assurance Engineer Level 1");
@@ -19,8 +18,7 @@ public class CsvServiceImplTest {
     mockCsvContent.add("Ihor,11,0,Junior,Software Engineer Level 2");
     mockCsvContent.add("Olha,3,3,Student,Resource Development Lab Student");
     mockCsvContent.add("Dmytro,5,1,QA,Quality Assurance Engineer Level 1");
-    mockCsvFileDto.setContent(mockCsvContent);
-    service = new CsvServiceImpl(mockCsvFileDto);
+    csvService = new CsvServiceImpl(new CsvFileDto(mockCsvContent));
   }
 
   @Test
@@ -31,7 +29,7 @@ public class CsvServiceImplTest {
     expected.add("Olha 2");
     expected.add("Ihor 1");
 
-    List<String> actual = service.count("Name");
+    List<String> actual = csvService.count("Name");
     Assert.assertEquals(expected, actual);
   }
 
@@ -40,7 +38,7 @@ public class CsvServiceImplTest {
     List<String> expected = new ArrayList<>();
     expected.add("The column \"Salary\" was not found");
 
-    List<String> actual = service.count("Salary");
+    List<String> actual = csvService.count("Salary");
     Assert.assertEquals(expected, actual);
   }
 
@@ -50,7 +48,7 @@ public class CsvServiceImplTest {
     expected.add("Name Unit");
     expected.add("Ihor 11");
 
-    List<String> actual = service.findMax("Unit");
+    List<String> actual = csvService.findMax("Unit");
     Assert.assertEquals(expected, actual);
   }
 
@@ -59,7 +57,7 @@ public class CsvServiceImplTest {
     List<String> expected = new ArrayList<>();
     expected.add("The column \"Salary\" was not found");
 
-    List<String> actual = service.findMax("Salary");
+    List<String> actual = csvService.findMax("Salary");
     Assert.assertEquals(expected, actual);
   }
 
@@ -67,7 +65,7 @@ public class CsvServiceImplTest {
   public void testFindMaxColumnNotNumeric() {
     List<String> expected = new ArrayList<>();
 
-    List<String> actual = service.findMax("Title");
+    List<String> actual = csvService.findMax("Title");
     Assert.assertEquals(expected, actual);
   }
 }
