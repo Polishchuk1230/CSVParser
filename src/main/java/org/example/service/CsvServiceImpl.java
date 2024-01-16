@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.example.exception.ColumnNotFountException;
+import org.example.exception.FileIsEmptyException;
+import org.example.exception.TableIsEmptyException;
 
 public class CsvServiceImpl implements CsvService, AutoCloseable {
   private static final String RESPONSE_VALUE_SEPARATOR = " ";
@@ -22,8 +24,8 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
 
   @Override
   public List<String> count(String columnName) throws IOException {
-    String[] headerNames = bufferedReader.readLine().split(COMMA);
-    int columnPosition = findColumnPosition(columnName, headerNames);
+    String[] headerNames = fetchFirstLineOrThrowException(bufferedReader).split(COMMA);
+    int columnPosition = findColumnPositionOrThrowException(columnName, headerNames);
 
     Map<String, Long> map = bufferedReader.lines()
         .map(line -> line.split(COMMA))
@@ -47,9 +49,8 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
 
   @Override
   public List<String> findMax(String columnName) throws IOException {
-    String[] headerNames = bufferedReader.readLine().split(COMMA);
-
-    int columnPosition = findColumnPosition(columnName, headerNames);
+    String[] headerNames = fetchFirstLineOrThrowException(bufferedReader).split(COMMA);
+    int columnPosition = findColumnPositionOrThrowException(columnName, headerNames);
 
     String[] maxValueArr = bufferedReader.lines()
         .map(str -> str.split(COMMA))
@@ -66,13 +67,12 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
         });
 
     if (maxValueArr == null) {
-      throw new IllegalStateException("File is empty");
+      throw new TableIsEmptyException("Table doesn't contain any data");
     }
-
-    return collectResponseForFindMax(headerNames, columnPosition, maxValueArr);
+    return collectResponseForFindMax(columnPosition, headerNames, maxValueArr);
   }
 
-  private int findColumnPosition(String columnName, String[] headerNames) {
+  private int findColumnPositionOrThrowException(String columnName, String[] headerNames) {
     int columnPosition = -1;
     for (int i = 0; i < headerNames.length; i++) {
       if (headerNames[i].equalsIgnoreCase(columnName)) {
@@ -87,12 +87,10 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
     return columnPosition;
   }
 
-  private List<String> collectResponseForFindMax(String[] headerNames, int columnPosition, String[] maxValue) {
+  private List<String> collectResponseForFindMax(int columnPosition, String[] headerNames, String[] maxValue) {
     List<String> result = new ArrayList<>();
     StringBuilder sb = new StringBuilder();
-    sb.append(headerNames[0])
-        .append(RESPONSE_VALUE_SEPARATOR)
-        .append(headerNames[columnPosition]);
+    sb.append(headerNames[0]).append(RESPONSE_VALUE_SEPARATOR).append(headerNames[columnPosition]);
     result.add(sb.toString());
 
     sb = new StringBuilder();
@@ -104,5 +102,13 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
   @Override
   public void close() throws Exception {
     this.bufferedReader.close();
+  }
+
+  private String fetchFirstLineOrThrowException(BufferedReader reader) throws IOException {
+    String firstLine = bufferedReader.readLine();
+    if (firstLine == null) {
+      throw new FileIsEmptyException("File is empty");
+    }
+    return firstLine;
   }
 }
