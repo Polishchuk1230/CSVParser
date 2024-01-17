@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import org.example.dto.FileContentDto;
 import org.example.exception.ColumnNotFountException;
 import org.example.exception.FileIsEmptyException;
 import org.example.service.CsvProcessorService;
@@ -30,7 +31,7 @@ public class CsvProcessorServiceImplTest {
             "Ihor,11,0,Junior,Software Engineer Level 2",
             "Olha,3,3,Student,Resource Development Lab Student",
             "Dmytro,5,1,QA,Quality Assurance Engineer Level 1"));
-    csvProcessorService = new CsvProcessorServiceImpl(mockedReader);
+    csvProcessorService = new CsvProcessorServiceImpl(new FileContentDto<>(mockedReader));
   }
 
   @Test
@@ -77,7 +78,7 @@ public class CsvProcessorServiceImplTest {
   public void testFindMaxFileIsEmpty() throws IOException {
     BufferedReader mockedReader = Mockito.mock(BufferedReader.class);
     Mockito.when(mockedReader.readLine()).thenReturn(null);
-    CsvProcessorServiceImpl service = new CsvProcessorServiceImpl(mockedReader);
+    CsvProcessorServiceImpl service = new CsvProcessorServiceImpl(new FileContentDto<>(mockedReader));
     service.findMax("Unit");
   }
 }

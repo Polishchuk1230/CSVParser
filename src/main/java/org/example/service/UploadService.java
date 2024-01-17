@@ -1,9 +1,9 @@
 package org.example.service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import org.example.dto.FileContentDto;
 
 public interface UploadService {
 
-  BufferedReader uploadFile(String path) throws IOException;
+  FileContentDto<?> uploadFile(String path) throws IOException;
 }

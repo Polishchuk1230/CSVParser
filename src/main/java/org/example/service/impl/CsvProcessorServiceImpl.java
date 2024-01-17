@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.example.dto.FileContentDto;
 import org.example.exception.ColumnNotFountException;
 import org.example.exception.FileIsEmptyException;
 import org.example.exception.TableIsEmptyException;
@@ -19,8 +20,8 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
 
   private final BufferedReader bufferedReader;
 
-  public CsvProcessorServiceImpl(BufferedReader bufferedReader) {
-    this.bufferedReader = bufferedReader;
+  public CsvProcessorServiceImpl(FileContentDto<BufferedReader> fileContentDto) {
+    this.bufferedReader = fileContentDto.getFileContent();
   }
 
   @Override
@@ -44,7 +45,7 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
         .sorted(compByValue.reversed())
         .map(entry -> entry.getKey() + RESPONSE_VALUE_SEPARATOR + entry.getValue())
         .collect(Collectors.toList());
-    result.add(0, String.format(columnName + RESPONSE_VALUE_SEPARATOR + "Count"));
+    result.add(0, columnName + RESPONSE_VALUE_SEPARATOR + "Count");
     return result;
   }
 
@@ -56,9 +57,9 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
     String[] maxValueArr = bufferedReader.lines()
         .map(str -> str.split(COMMA))
         .reduce(null, (resultArr, splitLine) ->
-            (resultArr == null || Integer.parseInt(splitLine[columnPosition]) > Integer.parseInt(resultArr[1]))
-                ? new String[] {splitLine[0], splitLine[columnPosition]}
-                : resultArr);
+            (resultArr == null || Integer.parseInt(splitLine[columnPosition]) > Integer.parseInt(resultArr[1])) ?
+                new String[] {splitLine[0], splitLine[columnPosition]} :
+                resultArr);
 
     if (maxValueArr == null) {
       throw new TableIsEmptyException("Table doesn't contain any data");
