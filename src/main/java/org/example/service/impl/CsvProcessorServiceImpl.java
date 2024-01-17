@@ -11,20 +11,20 @@ import java.util.stream.Collectors;
 import org.example.exception.ColumnNotFountException;
 import org.example.exception.FileIsEmptyException;
 import org.example.exception.TableIsEmptyException;
-import org.example.service.CsvService;
+import org.example.service.CsvProcessorService;
 
-public class CsvServiceImpl implements CsvService, AutoCloseable {
+public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseable {
   private static final String RESPONSE_VALUE_SEPARATOR = " ";
   private static final String COMMA = ",";
 
   private final BufferedReader bufferedReader;
 
-  public CsvServiceImpl(BufferedReader bufferedReader) {
+  public CsvProcessorServiceImpl(BufferedReader bufferedReader) {
     this.bufferedReader = bufferedReader;
   }
 
   @Override
-  public List<String> count(String columnName) throws IOException {
+  public List<String> count(String columnName) {
     String[] headerNames = fetchFirstLineOrThrowException(bufferedReader).split(COMMA);
     int columnPosition = findColumnPositionOrThrowException(columnName, headerNames);
 
@@ -49,23 +49,16 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
   }
 
   @Override
-  public List<String> findMax(String columnName) throws IOException {
+  public List<String> findMax(String columnName) {
     String[] headerNames = fetchFirstLineOrThrowException(bufferedReader).split(COMMA);
     int columnPosition = findColumnPositionOrThrowException(columnName, headerNames);
 
     String[] maxValueArr = bufferedReader.lines()
         .map(str -> str.split(COMMA))
-        .reduce(null, (resultArr, splitLine) -> {
-          if (resultArr == null) {
-            return new String[] {splitLine[0], splitLine[columnPosition]};
-          }
-          int oldValue = Integer.parseInt(resultArr[1]);
-          int newValue = Integer.parseInt(splitLine[columnPosition]);
-          if (newValue > oldValue) {
-            return new String[] {splitLine[0], splitLine[columnPosition]};
-          }
-          return resultArr;
-        });
+        .reduce(null, (resultArr, splitLine) ->
+            (resultArr == null || Integer.parseInt(splitLine[columnPosition]) > Integer.parseInt(resultArr[1]))
+                ? new String[] {splitLine[0], splitLine[columnPosition]}
+                : resultArr);
 
     if (maxValueArr == null) {
       throw new TableIsEmptyException("Table doesn't contain any data");
@@ -85,17 +78,16 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
     return result;
   }
 
-  @Override
-  public void close() throws Exception {
-    this.bufferedReader.close();
-  }
-
-  private String fetchFirstLineOrThrowException(BufferedReader reader) throws IOException {
-    String firstLine = reader.readLine();
-    if (firstLine == null) {
-      throw new FileIsEmptyException("File is empty");
+  private String fetchFirstLineOrThrowException(BufferedReader reader) {
+    try {
+      String firstLine = reader.readLine();
+      if (firstLine == null) {
+        throw new FileIsEmptyException("File is empty");
+      }
+      return firstLine;
+    } catch(IOException exception) {
+      throw new RuntimeException("Unexpected exception", exception);
     }
-    return firstLine;
   }
 
   private int findColumnPositionOrThrowException(String columnName, String[] headerNames) {
@@ -111,5 +103,14 @@ public class CsvServiceImpl implements CsvService, AutoCloseable {
           String.format("The column \"%s\" was not found", columnName));
     }
     return columnPosition;
+  }
+
+  @Override
+  public void close() {
+    try {
+      bufferedReader.close();
+    } catch (IOException exception) {
+      throw new RuntimeException("Unexpected exception", exception);
+    }
   }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 import org.example.model.Action;
 import org.example.service.impl.CommandServiceImpl;
-import org.example.service.impl.CsvServiceImpl;
+import org.example.service.impl.CsvProcessorServiceImpl;
 import org.example.service.ExceptionHandler;
 import org.example.service.impl.ExceptionHandlerImpl;
 import org.example.service.OutputService;
@@ -14,6 +14,7 @@ import org.example.service.impl.UploadServiceImpl;
 
 public class App {
     private static final String APP_NAME = "myparser";
+    private static final String EXIT_COMMAND = "exit";
     private static final String USER_INPUT_VALUE_SEPARATOR = " "; // space
     private static final int COMMAND_PARTS_COUNT = 4;
     private static final int COMMAND_PART_FILE_NAME = 1;
@@ -28,11 +29,11 @@ public class App {
 
         while (true) {
             String input = sc.nextLine();
-            if (input.contains("exit")) {
-                break;
-            }
             if (!input.startsWith(APP_NAME)) {
                 continue;
+            }
+            if (input.contains(EXIT_COMMAND)) {
+                break;
             }
 
             String[] splitInput = input.split(USER_INPUT_VALUE_SEPARATOR);
@@ -50,9 +51,9 @@ public class App {
             String parameter = splitInput[COMMAND_PART_PARAMETER];
 
             List<String> processedData;
-            try (CommandServiceImpl commandService = new CommandServiceImpl(
-                new CsvServiceImpl(new UploadServiceImpl().uploadFile(fileName))))
-            {
+            try (CsvProcessorServiceImpl csvProcessorService = new CsvProcessorServiceImpl(
+                    new UploadServiceImpl().uploadFile(fileName))) {
+                CommandServiceImpl commandService = new CommandServiceImpl(csvProcessorService);
                 processedData = commandService.processCommand(action, parameter);
             } catch(Exception e) {
                 processedData = exceptionHandler.handleException(e);

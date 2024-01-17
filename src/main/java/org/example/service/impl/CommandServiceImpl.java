@@ -1,30 +1,22 @@
 package org.example.service.impl;
 
-import java.io.IOException;
 import java.util.List;
 import org.example.model.Action;
 import org.example.service.CommandService;
-import org.example.service.CsvService;
+import org.example.service.CsvProcessorService;
 
-public class CommandServiceImpl implements CommandService, AutoCloseable {
-  private final CsvService csvService;
+public class CommandServiceImpl implements CommandService {
+  private final CsvProcessorService csvProcessorService;
 
-  public CommandServiceImpl(CsvService csvService) {
-    this.csvService = csvService;
+  public CommandServiceImpl(CsvProcessorService csvProcessorService) {
+    this.csvProcessorService = csvProcessorService;
   }
 
   @Override
-  public List<String> processCommand(String action, String columnName) throws IOException {
+  public List<String> processCommand(String action, String columnName) {
     return switch (Action.valueOf(action.toUpperCase())) {
-      case COUNT -> csvService.count(columnName);
-      case FIND_MAX -> csvService.findMax(columnName);
+      case COUNT -> csvProcessorService.count(columnName);
+      case FIND_MAX -> csvProcessorService.findMax(columnName);
     };
-  }
-
-  @Override
-  public void close() throws Exception {
-    if (csvService instanceof AutoCloseable) {
-      ((AutoCloseable) csvService).close();
-    }
   }
 }

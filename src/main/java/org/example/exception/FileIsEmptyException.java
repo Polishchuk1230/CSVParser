@@ -1,8 +1,6 @@
 package org.example.exception;
 
-import java.io.IOException;
-
-public class FileIsEmptyException extends IOException {
+public class FileIsEmptyException extends RuntimeException {
 
   public FileIsEmptyException(String message) {
     super(message);
