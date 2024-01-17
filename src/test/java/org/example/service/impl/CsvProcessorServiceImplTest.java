@@ -34,7 +34,7 @@ public class CsvProcessorServiceImplTest {
   }
 
   @Test
-  public void testCountValidCase() throws IOException {
+  public void testCountValidCase() {
     List<String> expected = new ArrayList<>();
     expected.add("Name Count");
     expected.add("Dmytro 3");
@@ -46,12 +46,12 @@ public class CsvProcessorServiceImplTest {
   }
 
   @Test(expected = ColumnNotFountException.class)
-  public void testCountColumnNotExists() throws IOException {
+  public void testCountColumnNotExists() {
     csvProcessorService.count("Salary");
   }
 
   @Test
-  public void testFindMaxValidCase() throws IOException {
+  public void testFindMaxValidCase() {
     List<String> expected = new ArrayList<>();
     expected.add("Name Unit");
     expected.add("Ihor 11");
@@ -61,12 +61,12 @@ public class CsvProcessorServiceImplTest {
   }
 
   @Test(expected = ColumnNotFountException.class)
-  public void testFindMaxColumnNotExists() throws IOException {
+  public void testFindMaxColumnNotExists() {
     csvProcessorService.findMax("Salary");
   }
 
   @Test(expected = NumberFormatException.class)
-  public void testFindMaxColumnNotNumeric() throws IOException {
+  public void testFindMaxColumnNotNumeric() {
     List<String> expected = new ArrayList<>();
 
     List<String> actual = csvProcessorService.findMax("Title");
