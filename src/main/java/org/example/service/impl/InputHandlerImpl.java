@@ -1,5 +1,7 @@
 package org.example.service.impl;
 
+import static org.example.exception.ExceptionMessage.WRONG_INPUT_MESSAGE;
+
 import java.util.List;
 import org.example.service.ExceptionHandler;
 import org.example.service.InputHandler;
@@ -7,11 +9,9 @@ import org.example.validator.InputValidator;
 
 public class InputHandlerImpl implements InputHandler {
   public static final String USER_INPUT_VALUE_SEPARATOR = " "; // space
-  public static final String WRONG_INPUT_MESSAGE =
-      "Wrong format.\nRight format: myparser <file_name.csv> find_max|count <column_name>";
-  public static final int COMMAND_PART_FILE_NAME = 1;
-  public static final int COMMAND_PART_ACTION = 2;
-  public static final int COMMAND_PART_PARAMETER = 3;
+  public static final int FILE_NAME_POSITION_NUMBER = 1;
+  public static final int ACTION_TYPE_POSITION_NUMBER = 2;
+  public static final int ACTION_PARAMETER_POSITION_NUMBER = 3;
 
   private final ExceptionHandler exceptionHandler;
   private final InputValidator inputValidator;
@@ -28,9 +28,9 @@ public class InputHandlerImpl implements InputHandler {
     }
     String[] splitInput = input.split(USER_INPUT_VALUE_SEPARATOR);
 
-    String pathToFile = splitInput[COMMAND_PART_FILE_NAME];
-    String actionName = splitInput[COMMAND_PART_ACTION];
-    String parameter = splitInput[COMMAND_PART_PARAMETER];
+    String pathToFile = splitInput[FILE_NAME_POSITION_NUMBER];
+    String actionName = splitInput[ACTION_TYPE_POSITION_NUMBER];
+    String parameter = splitInput[ACTION_PARAMETER_POSITION_NUMBER];
 
     List<String> processedData;
     try (CsvProcessorServiceImpl csvProcessorService = new CsvProcessorServiceImpl(

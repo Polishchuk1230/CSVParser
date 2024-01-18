@@ -1,5 +1,9 @@
 package org.example.service.impl;
 
+import static org.example.exception.ExceptionMessage.COLUMN_NOT_FOUND_EXCEPTION_MESSAGE_PATTERN;
+import static org.example.exception.ExceptionMessage.FILE_IS_EMPTY_EXCEPTION_MESSAGE;
+import static org.example.exception.ExceptionMessage.TABLE_IS_EMPTY_EXCEPTION_MESSAGE;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,7 +66,7 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
                 resultArr);
 
     if (maxValueArr == null) {
-      throw new TableIsEmptyException("Table doesn't contain any data");
+      throw new TableIsEmptyException(TABLE_IS_EMPTY_EXCEPTION_MESSAGE);
     }
     return collectResponseForFindMax(columnPosition, headerNames, maxValueArr);
   }
@@ -78,11 +82,11 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
     try {
       String firstLine = reader.readLine();
       if (firstLine == null) {
-        throw new FileIsEmptyException("File is empty");
+        throw new FileIsEmptyException(FILE_IS_EMPTY_EXCEPTION_MESSAGE);
       }
       return firstLine;
     } catch(IOException exception) {
-      throw new RuntimeException("Unexpected exception", exception);
+      throw new RuntimeException(exception);
     }
   }
 
@@ -96,7 +100,7 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
     }
     if (columnPosition < 0) {
       throw new ColumnNotFountException(
-          String.format("The column \"%s\" was not found", columnName));
+          String.format(COLUMN_NOT_FOUND_EXCEPTION_MESSAGE_PATTERN, columnName));
     }
     return columnPosition;
   }
@@ -106,7 +110,7 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
     try {
       bufferedReader.close();
     } catch (IOException exception) {
-      throw new RuntimeException("Unexpected exception", exception);
+      throw new RuntimeException(exception);
     }
   }
 }

@@ -1,8 +1,9 @@
 package org.example.validator;
 
+import static org.example.service.impl.InputHandlerImpl.ACTION_TYPE_POSITION_NUMBER;
+
 import java.util.Arrays;
 import org.example.model.Action;
-import org.example.service.impl.InputHandlerImpl;
 
 import static org.example.App.APP_NAME;
 
@@ -14,6 +15,6 @@ public class InputValidator {
     return input.startsWith(APP_NAME) &&
         splitInput.length == COMMAND_PARTS_COUNT &&
         Arrays.stream(Action.values()).anyMatch(
-            action -> action.toString().equalsIgnoreCase(splitInput[InputHandlerImpl.COMMAND_PART_ACTION]));
+            action -> action.toString().equalsIgnoreCase(splitInput[ACTION_TYPE_POSITION_NUMBER]));
   }
 }
