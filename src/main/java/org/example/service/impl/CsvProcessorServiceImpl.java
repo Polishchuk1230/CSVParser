@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.example.dto.FileContentDto;
 import org.example.exception.ColumnNotFountException;
@@ -26,15 +27,14 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
 
   @Override
   public List<String> count(String columnName) {
-    String[] headerNames = fetchFirstLineOrThrowException(bufferedReader).split(COMMA);
-    int columnPosition = findColumnPositionOrThrowException(columnName, headerNames);
+    String[] headerNames = fetchFirstLine(bufferedReader).split(COMMA);
+    int columnPosition = findColumnPosition(columnName, headerNames);
 
     Map<String, Long> map = bufferedReader.lines()
         .map(line -> line.split(COMMA))
         .map(arr -> arr[columnPosition])
-        .filter(value -> !value.equalsIgnoreCase(columnName))
         .collect(
-            Collectors.groupingBy(str -> str, Collectors.counting()));
+            Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
     return collectResponseForCount(map, columnName);
   }
@@ -51,8 +51,8 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
 
   @Override
   public List<String> findMax(String columnName) {
-    String[] headerNames = fetchFirstLineOrThrowException(bufferedReader).split(COMMA);
-    int columnPosition = findColumnPositionOrThrowException(columnName, headerNames);
+    String[] headerNames = fetchFirstLine(bufferedReader).split(COMMA);
+    int columnPosition = findColumnPosition(columnName, headerNames);
 
     String[] maxValueArr = bufferedReader.lines()
         .map(str -> str.split(COMMA))
@@ -69,17 +69,12 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
 
   private List<String> collectResponseForFindMax(int columnPosition, String[] headerNames, String[] maxValue) {
     List<String> result = new ArrayList<>();
-    StringBuilder sb = new StringBuilder();
-    sb.append(headerNames[0]).append(RESPONSE_VALUE_SEPARATOR).append(headerNames[columnPosition]);
-    result.add(sb.toString());
-
-    sb = new StringBuilder();
-    sb.append(maxValue[0]).append(RESPONSE_VALUE_SEPARATOR).append(maxValue[1]);
-    result.add(sb.toString());
+    result.add(headerNames[0] + RESPONSE_VALUE_SEPARATOR + headerNames[columnPosition]);
+    result.add(maxValue[0] + RESPONSE_VALUE_SEPARATOR + maxValue[1]);
     return result;
   }
 
-  private String fetchFirstLineOrThrowException(BufferedReader reader) {
+  private String fetchFirstLine(BufferedReader reader) {
     try {
       String firstLine = reader.readLine();
       if (firstLine == null) {
@@ -91,7 +86,7 @@ public class CsvProcessorServiceImpl implements CsvProcessorService, AutoCloseab
     }
   }
 
-  private int findColumnPositionOrThrowException(String columnName, String[] headerNames) {
+  private int findColumnPosition(String columnName, String[] headerNames) {
     int columnPosition = -1;
     for (int i = 0; i < headerNames.length; i++) {
       if (headerNames[i].equalsIgnoreCase(columnName)) {
