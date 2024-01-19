@@ -1,6 +1,5 @@
 package org.example.service.impl;
 
-import static org.example.App.APP_NAME;
 import static org.example.exception.ExceptionMessage.FILE_NOT_FOUND_EXCEPTION_MESSAGE;
 
 import java.io.BufferedReader;
@@ -57,8 +56,8 @@ public class InputHandlerTest {
     expected.add("Name Unit");
     expected.add("Ihor 11");
 
-    String input = String.format("%s example_file.csv %s Unit", APP_NAME, Action.FIND_MAX);
-    List<String> actual = IInputHandler.processInput(input);
+    String[] inputArgs = new String[] {"example_file.csv", Action.FIND_MAX.toString(), "Unit"};
+    List<String> actual = IInputHandler.processInput(inputArgs);
 
     Assert.assertEquals(expected, actual);
   }
@@ -68,8 +67,8 @@ public class InputHandlerTest {
     List<String> expected = new ArrayList<>();
     expected.add(FILE_NOT_FOUND_EXCEPTION_MESSAGE);
 
-    String input = String.format("%s not_existed_file.csv %s Unit", APP_NAME, Action.FIND_MAX);
-    List<String> actual = IInputHandler.processInput(input);
+    String[] inputArgs = new String[] {"not_existed_file.csv", Action.FIND_MAX.toString(), "Unit"};
+    List<String> actual = IInputHandler.processInput(inputArgs);
 
     Assert.assertEquals(expected, actual);
   }

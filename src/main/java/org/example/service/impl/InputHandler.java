@@ -11,10 +11,9 @@ import org.example.service.IUploadService;
 import org.example.validator.InputValidator;
 
 public class InputHandler implements org.example.service.IInputHandler {
-  public static final String USER_INPUT_VALUE_SEPARATOR = " "; // space
-  public static final int FILE_NAME_POSITION_NUMBER = 1;
-  public static final int ACTION_TYPE_POSITION_NUMBER = 2;
-  public static final int ACTION_PARAMETERS_POSITION_NUMBER = 3;
+  public static final int FILE_NAME_POSITION_NUMBER = 0;
+  public static final int ACTION_TYPE_POSITION_NUMBER = 1;
+  public static final int ACTION_PARAMETERS_POSITION_NUMBER = 2;
 
   private final IExceptionHandler IExceptionHandler;
   private final InputValidator inputValidator;
@@ -28,15 +27,14 @@ public class InputHandler implements org.example.service.IInputHandler {
   }
 
   @Override
-  public List<String> processInput(String input) {
-    if (!inputValidator.isValid(input)) {
+  public List<String> processInput(String[] args) {
+    if (!inputValidator.isValid(args)) {
       return List.of(WRONG_INPUT_MESSAGE);
     }
-    String[] splitInput = input.split(USER_INPUT_VALUE_SEPARATOR);
 
-    String pathToFile = splitInput[FILE_NAME_POSITION_NUMBER];
-    String actionName = splitInput[ACTION_TYPE_POSITION_NUMBER];
-    String[] parameters = Arrays.copyOfRange(splitInput, ACTION_PARAMETERS_POSITION_NUMBER, splitInput.length);
+    String pathToFile = args[FILE_NAME_POSITION_NUMBER];
+    String actionName = args[ACTION_TYPE_POSITION_NUMBER];
+    String[] parameters = Arrays.copyOfRange(args, ACTION_PARAMETERS_POSITION_NUMBER, args.length);
 
     List<String> processedData;
     try {

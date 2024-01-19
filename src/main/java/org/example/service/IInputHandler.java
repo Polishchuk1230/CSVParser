@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface IInputHandler {
 
-  List<String> processInput(String input);
+  List<String> processInput(String[] input);
 }
