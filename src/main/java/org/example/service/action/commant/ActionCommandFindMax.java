@@ -15,7 +15,8 @@ public class ActionCommandFindMax extends AActionCommand {
   }
 
   @Override
-  public List<String> execute(String columnName) {
+  public List<String> execute(String... parameters) {
+    String columnName = parameters[0];
     String[] headerNames = fetchFirstLine(bufferedReader).split(COMMA);
     int columnPosition = findColumnPosition(columnName, headerNames);
 

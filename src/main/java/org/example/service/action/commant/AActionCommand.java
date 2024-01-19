@@ -17,7 +17,7 @@ public abstract class AActionCommand implements AutoCloseable {
 
   protected final BufferedReader bufferedReader;
 
-  public abstract List<String> execute(String columnName);
+  public abstract List<String> execute(String... columnName);
 
   public AActionCommand(FileContentDto<BufferedReader> fileContentDto) {
     this.bufferedReader = fileContentDto.getFileContent();

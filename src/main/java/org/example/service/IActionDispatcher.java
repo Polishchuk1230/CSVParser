@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface IActionDispatcher {
 
-  List<String> dispatchAction(String action, String parameter);
+  List<String> dispatchAction(String action, String... parameter);
 }

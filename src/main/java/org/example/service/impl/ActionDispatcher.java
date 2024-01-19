@@ -18,13 +18,13 @@ public class ActionDispatcher implements IActionDispatcher {
   }
 
   @Override
-  public List<String> dispatchAction(String action, String parameter) {
+  public List<String> dispatchAction(String action, String... parameters) {
     AActionCommand command = switch (Action.valueOf(action.toUpperCase())) {
       case COUNT -> new ActionCommandCount(fileContentDto);
       case FIND_MAX -> new ActionCommandFindMax(fileContentDto);
     };
     try (command) {
-      return command.execute(parameter);
+      return command.execute(parameters);
     }
   }
 }
