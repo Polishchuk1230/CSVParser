@@ -1,6 +1,6 @@
 package org.example.validator;
 
-import static org.example.service.impl.InputHandlerImpl.ACTION_TYPE_POSITION_NUMBER;
+import static org.example.service.impl.InputHandler.ACTION_TYPE_POSITION_NUMBER;
 
 import java.util.Arrays;
 import org.example.model.Action;

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.example.dto.FileContentDto;
 import org.example.model.Action;
-import org.example.service.InputHandler;
 import org.example.validator.InputValidator;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +17,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-public class InputHandlerImplTest {
+public class InputHandlerTest {
   private static final List<String> TESTED_DATA = List.of(
       "Name,Unit,Prevoius,Title,Description",
       "Dmytro,0,4,QA,Quality Assurance Engineer Level 1",
@@ -27,7 +26,7 @@ public class InputHandlerImplTest {
       "Ihor,11,0,Junior,Software Engineer Level 2",
       "Olha,3,3,Student,Resource Development Lab Student",
       "Dmytro,5,1,QA,Quality Assurance Engineer Level 1");
-  private InputHandler inputHandler;
+  private org.example.service.IInputHandler IInputHandler;
 
   @Before
   public void createInputHandlerImplInstance() throws IOException {
@@ -39,14 +38,14 @@ public class InputHandlerImplTest {
 
     FileContentDto<BufferedReader> fileContentDto = new FileContentDto<>(mockedReader);
 
-    UploadServiceImpl mockedUploadService = Mockito.mock(UploadServiceImpl.class);
+    UploadService mockedUploadService = Mockito.mock(UploadService.class);
     Mockito.when(mockedUploadService.uploadFile(ArgumentMatchers.anyString()))
         .thenThrow(FileNotFoundException.class);
     Mockito.when(mockedUploadService.uploadFile(ArgumentMatchers.eq("example_file.csv")))
         .thenReturn(fileContentDto);
 
-    inputHandler = new InputHandlerImpl(
-        new ExceptionHandlerImpl(),
+    IInputHandler = new InputHandler(
+        new ExceptionHandler(),
         new InputValidator(),
         mockedUploadService
     );
@@ -59,7 +58,7 @@ public class InputHandlerImplTest {
     expected.add("Ihor 11");
 
     String input = String.format("%s example_file.csv %s Unit", APP_NAME, Action.FIND_MAX);
-    List<String> actual = inputHandler.processInput(input);
+    List<String> actual = IInputHandler.processInput(input);
 
     Assert.assertEquals(expected, actual);
   }
@@ -70,7 +69,7 @@ public class InputHandlerImplTest {
     expected.add(FILE_NOT_FOUND_EXCEPTION_MESSAGE);
 
     String input = String.format("%s not_existed_file.csv %s Unit", APP_NAME, Action.FIND_MAX);
-    List<String> actual = inputHandler.processInput(input);
+    List<String> actual = IInputHandler.processInput(input);
 
     Assert.assertEquals(expected, actual);
   }

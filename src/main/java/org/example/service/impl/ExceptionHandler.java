@@ -5,9 +5,8 @@ import static org.example.exception.ExceptionMessage.NUMBER_FORMAT_EXCEPTION_MES
 import static org.example.exception.ExceptionMessage.UNEXPECTED_EXCEPTION_MESSAGE_PATTERN;
 
 import java.util.List;
-import org.example.service.ExceptionHandler;
 
-public class ExceptionHandlerImpl implements ExceptionHandler {
+public class ExceptionHandler implements org.example.service.IExceptionHandler {
 
   @Override
   public List<String> handleException(Exception exception) {

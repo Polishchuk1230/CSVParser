@@ -2,7 +2,7 @@ package org.example.service;
 
 import java.util.List;
 
-public interface InputHandler {
+public interface IInputHandler {
 
   List<String> processInput(String input);
 }

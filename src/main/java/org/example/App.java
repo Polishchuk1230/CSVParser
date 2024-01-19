@@ -1,12 +1,13 @@
 package org.example;
 
 import java.util.Scanner;
-import org.example.service.ExceptionHandler;
-import org.example.service.OutputHandler;
-import org.example.service.impl.ExceptionHandlerImpl;
-import org.example.service.impl.InputHandlerImpl;
-import org.example.service.impl.OutputHandlerImpl;
-import org.example.service.impl.UploadServiceImpl;
+import org.example.service.IExceptionHandler;
+import org.example.service.IInputHandler;
+import org.example.service.IOutputHandler;
+import org.example.service.impl.ExceptionHandler;
+import org.example.service.impl.InputHandler;
+import org.example.service.impl.OutputHandler;
+import org.example.service.impl.UploadService;
 import org.example.validator.InputValidator;
 
 public class App {
@@ -15,10 +16,10 @@ public class App {
     public static final String EXIT_COMMAND = "exit";
 
     public static void main(String[] args) {
-        OutputHandler output = new OutputHandlerImpl();
-        ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
-        InputHandlerImpl inputHandler =
-            new InputHandlerImpl(exceptionHandler, new InputValidator(), new UploadServiceImpl());
+        IOutputHandler output = new OutputHandler();
+        IExceptionHandler IExceptionHandler = new ExceptionHandler();
+        IInputHandler inputHandler =
+            new InputHandler(IExceptionHandler, new InputValidator(), new UploadService());
 
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {

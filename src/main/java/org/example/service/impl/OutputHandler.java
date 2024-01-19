@@ -1,9 +1,9 @@
 package org.example.service.impl;
 
 import java.util.List;
-import org.example.service.OutputHandler;
+import org.example.service.IOutputHandler;
 
-public class OutputHandlerImpl implements OutputHandler {
+public class OutputHandler implements IOutputHandler {
 
   @Override
   public void sendResponse(List<String> lines) {
