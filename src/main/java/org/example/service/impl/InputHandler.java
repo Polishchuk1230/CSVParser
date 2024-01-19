@@ -9,24 +9,24 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
-import org.example.dto.FileContentDto;
 import org.example.exception.ColumnNotFountException;
 import org.example.exception.FileIsEmptyException;
 import org.example.exception.TableIsEmptyException;
+import org.example.service.IInputHandler;
 import org.example.service.IUploadService;
 import org.example.validator.InputValidator;
 
-public class InputHandler implements org.example.service.IInputHandler {
+public class InputHandler implements IInputHandler {
   public static final int FILE_NAME_POSITION_NUMBER = 0;
   public static final int ACTION_TYPE_POSITION_NUMBER = 1;
   public static final int ACTION_PARAMETERS_POSITION_NUMBER = 2;
 
   private final InputValidator inputValidator;
-  private final IUploadService<BufferedReader> IUploadService;
+  private final IUploadService<BufferedReader> uploadService;
 
-  public InputHandler(InputValidator inputValidator, IUploadService<BufferedReader> IUploadService) {
+  public InputHandler(InputValidator inputValidator, IUploadService<BufferedReader> uploadService) {
     this.inputValidator = inputValidator;
-    this.IUploadService = IUploadService;
+    this.uploadService = uploadService;
   }
 
   @Override
@@ -40,9 +40,8 @@ public class InputHandler implements org.example.service.IInputHandler {
     String[] parameters = Arrays.copyOfRange(args, ACTION_PARAMETERS_POSITION_NUMBER, args.length);
 
     List<String> processedData;
-    try {
-      FileContentDto<BufferedReader> fileContentDto = IUploadService.uploadFile(pathToFile);
-      processedData = new ActionDispatcher(fileContentDto).dispatchAction(actionName, parameters);
+    try (ActionDispatcher actionDispatcher = new ActionDispatcher(uploadService.uploadFile(pathToFile))) {
+      processedData = actionDispatcher.dispatchAction(actionName, parameters);
     } catch (ColumnNotFountException | FileIsEmptyException | TableIsEmptyException exception) {
       processedData = List.of(exception.getMessage());
     } catch (FileNotFoundException exception) {

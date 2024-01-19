@@ -10,14 +10,14 @@ import org.example.dto.FileContentDto;
 import org.example.exception.ColumnNotFountException;
 import org.example.exception.FileIsEmptyException;
 
-public abstract class AActionCommand implements AutoCloseable {
+public abstract class AActionCommand {
 
   protected static final String RESPONSE_VALUE_SEPARATOR = " ";
   protected static final String COMMA = ",";
 
   protected final BufferedReader bufferedReader;
 
-  public abstract List<String> execute(String... columnName);
+  public abstract List<String> execute(String... parameters);
 
   public AActionCommand(FileContentDto<BufferedReader> fileContentDto) {
     this.bufferedReader = fileContentDto.getFileContent();
@@ -48,14 +48,5 @@ public abstract class AActionCommand implements AutoCloseable {
           String.format(COLUMN_NOT_FOUND_EXCEPTION_MESSAGE_PATTERN, columnName));
     }
     return columnPosition;
-  }
-
-  @Override
-  public void close() {
-    try {
-      bufferedReader.close();
-    } catch (IOException exception) {
-      throw new RuntimeException(exception);
-    }
   }
 }
