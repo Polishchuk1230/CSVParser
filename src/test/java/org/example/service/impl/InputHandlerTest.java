@@ -44,7 +44,6 @@ public class InputHandlerTest {
         .thenReturn(fileContentDto);
 
     IInputHandler = new InputHandler(
-        new ExceptionHandler(),
         new InputValidator(),
         mockedUploadService
     );
