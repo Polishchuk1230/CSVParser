@@ -6,6 +6,7 @@ import org.example.service.OutputHandler;
 import org.example.service.impl.ExceptionHandlerImpl;
 import org.example.service.impl.InputHandlerImpl;
 import org.example.service.impl.OutputHandlerImpl;
+import org.example.service.impl.UploadServiceImpl;
 import org.example.validator.InputValidator;
 
 public class App {
@@ -16,7 +17,8 @@ public class App {
     public static void main(String[] args) {
         OutputHandler output = new OutputHandlerImpl();
         ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
-        InputHandlerImpl inputHandler = new InputHandlerImpl(exceptionHandler, new InputValidator());
+        InputHandlerImpl inputHandler =
+            new InputHandlerImpl(exceptionHandler, new InputValidator(), new UploadServiceImpl());
 
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {

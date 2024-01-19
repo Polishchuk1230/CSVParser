@@ -2,9 +2,11 @@ package org.example.service.impl;
 
 import static org.example.exception.ExceptionMessage.WRONG_INPUT_MESSAGE;
 
+import java.io.BufferedReader;
 import java.util.List;
 import org.example.service.ExceptionHandler;
 import org.example.service.InputHandler;
+import org.example.service.UploadService;
 import org.example.validator.InputValidator;
 
 public class InputHandlerImpl implements InputHandler {
@@ -15,10 +17,13 @@ public class InputHandlerImpl implements InputHandler {
 
   private final ExceptionHandler exceptionHandler;
   private final InputValidator inputValidator;
+  private final UploadService<BufferedReader> uploadService;
 
-  public InputHandlerImpl(ExceptionHandler exceptionHandler, InputValidator inputValidator) {
+  public InputHandlerImpl(ExceptionHandler exceptionHandler, InputValidator inputValidator,
+      UploadService<BufferedReader> uploadService) {
     this.exceptionHandler = exceptionHandler;
     this.inputValidator = inputValidator;
+    this.uploadService = uploadService;
   }
 
   @Override
@@ -34,7 +39,7 @@ public class InputHandlerImpl implements InputHandler {
 
     List<String> processedData;
     try (CsvProcessorServiceImpl csvProcessorService = new CsvProcessorServiceImpl(
-        new UploadServiceImpl().uploadFile(pathToFile))) {
+        uploadService.uploadFile(pathToFile))) {
       processedData = new ActionDispatcherImpl(csvProcessorService)
           .dispatchAction(actionName, parameter);
     } catch(Exception e) {

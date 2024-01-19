@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.example.dto.FileContentDto;
 import org.example.service.UploadService;
 
-public class UploadServiceImpl implements UploadService {
+public class UploadServiceImpl implements UploadService<BufferedReader> {
 
   @Override
   public FileContentDto<BufferedReader> uploadFile(String path) throws IOException {

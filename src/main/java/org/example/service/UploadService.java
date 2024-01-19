@@ -3,7 +3,7 @@ package org.example.service;
 import java.io.IOException;
 import org.example.dto.FileContentDto;
 
-public interface UploadService {
+public interface UploadService<T> {
 
-  FileContentDto<?> uploadFile(String path) throws IOException;
+  FileContentDto<T> uploadFile(String path) throws IOException;
 }
